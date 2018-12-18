@@ -21,18 +21,20 @@ typedef struct node {
 // 전역 변수
 int hp = 5;
 char hp_str[2]="";
+int score = 0;
+char score_str[MAX]="";
 int i = 0; 
 int length = 0;
 nodePointer ptr = NULL;
 char enterText[20] = { 0 };
 int enterHere = 0;
-int sleep_time = 1;
+int sleep_time = 2;
+int sleep_cnt=0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 // 사용함수들
 void reset();
 void *thread_1();
-void *thread_2();
 void findWord(char *str);
 nodePointer makeNode();
 void makePlusOne();
@@ -43,22 +45,27 @@ void function(int);
 
 // 메인 함수
 void main() {
-	pthread_t t1;
+	pthread_t t1,t2;
 
 	initscr();
 	clear();
 
 	srand(time(NULL));
-
+	
 	// signal 처리
 	signal(SIGQUIT,function);
 
 	// default setting
 	move(0,70);
 	addstr("*username");
+
+	// score print
 	move(1,1);
 	addstr("score : ");
-	
+	sprintf(score_str,"%d",score);
+	addstr(score_str);
+	refresh();
+
 	// hp print
 	move(0,1);
 	addstr("life  : ");
@@ -71,9 +78,10 @@ void main() {
 
 	// 쓰레드 생성
 	pthread_create(&t1, NULL, thread_1, NULL);
-
+	
 	// hp > 0 이상일 동안 반복
-	while (hp > 0) {
+	while (hp > 0) {		
+
 		for (enterHere = 0; enterHere < 20;) {
 			int c = getch();
 
@@ -120,7 +128,7 @@ void main() {
 
 	// 쓰레드 조인
 	pthread_join(t1, NULL);
-	
+
 	// 초기화	
 	reset();
 	clear();
@@ -171,9 +179,23 @@ void * thread_1()
 	nodePointer del=NULL;	
 	while (hp > 0) {
 		
-		addQ(returnWord(), (rand() % 40) + 8);
-		temp = ptr;
+		sleep_cnt++;
 
+		// 3칸마다 문자열 생성
+		switch(sleep_cnt){
+			case 0:
+				addQ("",0);
+				break;
+			case 1:
+				addQ("",0);
+				break;
+			case 2:
+				addQ(returnWord(), (rand() % 40) + 8);
+				sleep_cnt=0;
+		}
+
+		temp = ptr;
+		
 
 		// 문자열 전부 출력
 		while (temp) {
@@ -223,15 +245,8 @@ void * thread_1()
 
 		move(20, 36); // 커서 이동
 		sleep(t); // 대기
+		
 	}
-}
-// 주기적으로 단어 추가해주는 쓰레드
-void *thread_2(){
-
-	int t = 5;
-
-	// hp >0 이상일 동	
-	addQ(returnWord(), (rand() % 40) + 8);
 }
 
 // 해당 단어 찾기 함수
@@ -248,6 +263,15 @@ void findWord(char *str) {
 		// 같은 걸 찾으면 빈문자열로 바꿔준 후 종료
 		if (!strcmp(temp->str, str)) {
 			strcpy(temp->str,"");
+			
+			score++;
+
+			// score print
+			move(1,1);
+			addstr("score : ");
+			sprintf(score_str,"%d",score);
+			addstr(score_str);
+			refresh();
 			return;
 		}
 		// 다음 노드
@@ -308,7 +332,7 @@ void addQ(char *str, int col) {
 	length++;
 }
 
-// 랜덤으로 문자열 만들어서 반환하기
+// 랜덤으로 문자열 반환하기
 char * returnWord() {
 
 	char * DB[] = { "apple","jung","cocaine","hello","elite","fail","game",

@@ -10,16 +10,16 @@
 #define MAX 100
 
 
-// ³ëµå ±¸Á¶Ã¼ ¼±¾ğ
+// ë…¸ë“œ êµ¬ì¡°ì²´ ì„ ì–¸
 typedef struct node * nodePointer;
 typedef struct node {
 	nodePointer right,left;
-	char str[MAX]; // Ãâ·Â ¹®ÀÚ
-	int row,col; // Ãâ·Â Çà¿­
-	int mode; // Ãâ·Â ¸ğµå
+	char str[MAX]; // ì¶œë ¥ ë¬¸ì
+	int row,col; // ì¶œë ¥ í–‰ì—´
+	int mode; // ì¶œë ¥ ëª¨ë“œ
 }node;
 
-// Àü¿ª º¯¼ö
+// ì „ì—­ ë³€ìˆ˜
 int hp = 5;
 char hp_str[2]="";
 int score = 0;
@@ -33,7 +33,7 @@ int sleep_time = 1;
 int sleep_cnt=0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
-// Áö··ÀÌ ¿òÁ÷ÀÓ¿¡ ¾²´Â º¯¼ö
+// ì§€ë ì´ ì›€ì§ì„ì— ì“°ëŠ” ë³€ìˆ˜
 int move_cute = 0;
 int cute_mode = 0;
 char cute1[] = "COCOCOCOCOCOCOCOD";
@@ -48,7 +48,7 @@ char blank2_2[] = "    ";
 char blank2_3[] = "    ";
 char blank2_4[] = "           ";
 
-// »ç¿ëÇÔ¼öµé
+// ì‚¬ìš©í•¨ìˆ˜ë“¤
 void reset();
 void *thread_1();
 void checkWord(char *str);
@@ -63,16 +63,16 @@ void game();
 void cute(int move);
 int cute_pos_comp(int row, int col, int len);
 
-// ¸ŞÀÎ ÇÔ¼ö
+// ë©”ì¸ í•¨ìˆ˜
 void main() {
 	
 	char option;
 	
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	initscr();
 	clear();
 	
-	// signal Ã³¸®
+	// signal ì²˜ë¦¬
 	signal(SIGQUIT,function);
 
 	move(3,10);
@@ -97,37 +97,37 @@ void main() {
 	move(16,20);
 	refresh();
 
-	// ÀÔ·Â ¹Ş±â
+	// ì…ë ¥ ë°›ê¸°
 	option = getch();
 	
-	// option °ª µû¶ó
+	// option ê°’ ë”°ë¼
 	switch(option){
-		// °ÔÀÓÇÏ±â
+		// ê²Œì„í•˜ê¸°
 		case '1':
-			// °ÔÀÓ
+			// ê²Œì„
 			while(hp>0){
 				game();
 			}
 			break;
 
-		// Á¾·áÇÏ±â
+		// ì¢…ë£Œí•˜ê¸°
       		case '3':
    			break;
 	}	
-	// ÃÊ±âÈ­	
+	// ì´ˆê¸°í™”	
 	reset();
 	endwin();
 	clear();
 }
 
 
-// °ÔÀÓ µ¿ÀÛ ÇÔ¼ö
+// ê²Œì„ ë™ì‘ í•¨ìˆ˜
 void game(){
 	
 	
 	pthread_t t1,t2;
 	
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	initscr();
 	clear();
 
@@ -150,7 +150,7 @@ void game(){
 	addstr(hp_str);
 	refresh();
 
-	// Áö··ÀÌ
+	// ì§€ë ì´
 	move(19, 80);
 	addstr("COCOCOCOCOCOCOCOD");
 	refresh();
@@ -158,16 +158,16 @@ void game(){
 	// enter setting
 	draw(20, 20, "	| Enter | : ");
 
-	// ¾²·¹µå »ı¼º
+	// ì“°ë ˆë“œ ìƒì„±
 	pthread_create(&t1, NULL, thread_1, NULL);
 	
-	// hp > 0 ÀÌ»óÀÏ µ¿¾È ¹İº¹
+	// hp > 0 ì´ìƒì¼ ë™ì•ˆ ë°˜ë³µ
 	while (hp > 0) {		
 		
-		// ½ÃÀÛÀ§Ä¡ ÃÊ±âÈ­
+		// ì‹œì‘ìœ„ì¹˜ ì´ˆê¸°í™”
 		enterHere = 0;
 
-		// ¹İº¹¹®
+		// ë°˜ë³µë¬¸
 		for (enterHere = 0; enterHere < 20;) {
 			int c = getch();
 			
@@ -177,12 +177,12 @@ void game(){
 				continue;
 			}
 
-			// enter µé¾î¿À¸é ¹®ÀÚ¿­ Ã£¾Æ¼­ »èÁ¦
+			// enter ë“¤ì–´ì˜¤ë©´ ë¬¸ìì—´ ì°¾ì•„ì„œ ì‚­ì œ
 			else if (c == '\n') {
 				enterText[enterHere] = '\0';
 				checkWord(enterText);
 
-				delete(20, 36, enterText);						// enter·Î ÀÔ·ÂÇÑ ³»¿ë »èÁ¦
+				delete(20, 36, enterText);						// enterë¡œ ì…ë ¥í•œ ë‚´ìš© ì‚­ì œ
 
 				for (i = 0; i < 20; i++)
 					enterText[i] = '\0';
@@ -192,9 +192,9 @@ void game(){
 
 				break;
 			}
-			// backspace µé¾î¿À¸é ¹®ÀÚ ÇÏ³ª »èÁ¦
+			// backspace ë“¤ì–´ì˜¤ë©´ ë¬¸ì í•˜ë‚˜ ì‚­ì œ
 			else if (c == 127) {
-				// ³²¾ÆÀÖÀ¸¸é »èÁ¦
+				// ë‚¨ì•„ìˆìœ¼ë©´ ì‚­ì œ
 				if (enterHere > 0) {
 					enterText[--enterHere] = '\0';
 					move(20, 36);
@@ -202,14 +202,14 @@ void game(){
 					move(20, 36);
 					addstr(enterText);
 				}
-				// ¾øÀ¸¸é ºó¹®ÀÚ¿­ Ãâ·Â
+				// ì—†ìœ¼ë©´ ë¹ˆë¬¸ìì—´ ì¶œë ¥
 				else {
 					move(20, 36);
 					addstr("		");
 				}
 			}
 
-			// ÀÔ·ÂÀÌ µÇ¸é ÇÏ³ªÃß°¡ÇØ¼­ º¸¿©ÁÖ±â
+			// ì…ë ¥ì´ ë˜ë©´ í•˜ë‚˜ì¶”ê°€í•´ì„œ ë³´ì—¬ì£¼ê¸°
 			else {
 				enterText[enterHere++] = c;
 				move(20, 36);
@@ -220,15 +220,15 @@ void game(){
 		}		
 	}
 
-	// ¾²·¹µå Á¶ÀÎ
+	// ì“°ë ˆë“œ ì¡°ì¸
 	pthread_join(t1, NULL);
 
-	// ÃÊ±âÈ­	
+	// ì´ˆê¸°í™”	
 	reset();
 	clear();
 }
 
-// °­Á¦ Á¾·á½Ã ÇÔ¼ö Á¾·á Ã³¸®
+// ê°•ì œ ì¢…ë£Œì‹œ í•¨ìˆ˜ ì¢…ë£Œ ì²˜ë¦¬
 void function(int signum){
 	reset();
 	curs_set(1);
@@ -236,7 +236,7 @@ void function(int signum){
 	exit(1);
 }
 
-// node free ÇÔ¼ö
+// node free í•¨ìˆ˜
 void reset() {
 	nodePointer temp = NULL;
 	nodePointer temp2 = NULL;
@@ -244,7 +244,7 @@ void reset() {
 	temp = ptr;
 
 	if (temp != NULL) {
-		// °³¼ö ³²¾ÆÀÖÀ¸¸é »èÁ¦ÇÏ±â
+		// ê°œìˆ˜ ë‚¨ì•„ìˆìœ¼ë©´ ì‚­ì œí•˜ê¸°
 		while (nodeCnt > 0) {
 			temp = ptr;
 
@@ -253,32 +253,30 @@ void reset() {
 				temp = temp->right;
 			}
 
-			free(temp); // ºñ¿öÁÖ±â
+			free(temp); // ë¹„ì›Œì£¼ê¸°
 
 			if (temp2 != NULL)
 				temp2->right = NULL;
 
-			nodeCnt--; // °³¼ö °¨¼Ò
+			nodeCnt--; // ê°œìˆ˜ ê°ì†Œ
 			temp2 = NULL;
 		}
 		ptr = NULL;
 	}
 }
 
-// ´Ü¾î Ãâ·Â ¾²·¹µå
+// ë‹¨ì–´ ì¶œë ¥ ì“°ë ˆë“œ
 void * thread_1()
 {
 	int t = sleep_time;
 	nodePointer temp = NULL;
 	nodePointer del = NULL;	
-	int check = 0;												// cute_pos_compÇÔ¼öÀÇ °ªÀ» ÀúÀåÇÒ º¯¼ö
-	char test[10] = "";
-	char test2[10] = "";
-	char test3[10] = "";
+	int check = 0;									// cute_pos_compí•¨ìˆ˜ì˜ ê°’ì„ ì €ì¥í•  ë³€ìˆ˜
+	
 	while (hp > 0) {	
 		sleep_cnt++;
 
-		// 3Ä­¸¶´Ù ¹®ÀÚ¿­ »ı¼º
+		// 3ì¹¸ë§ˆë‹¤ ë¬¸ìì—´ ìƒì„±
 		switch(sleep_cnt){
 			case 0:
 				addQ("",0);
@@ -287,46 +285,36 @@ void * thread_1()
 				addQ("",0);
 				break;
 			case 2:
-				addQ(makeWord(), (rand() % 40) + 12);			// score°¡ 10ÀÇÀÚ¸®ÀÏ¶§ 8¹øÂ° Ä­
+				addQ(makeWord(), (rand() % 40) + 12);			// scoreê°€ 10ì˜ìë¦¬ì¼ë•Œ 8ë²ˆì§¸ ì¹¸
 				sleep_cnt=0;
 		}
 		temp = ptr;
 		
 
-		// ¹®ÀÚ¿­ ÀüºÎ Ãâ·Â
+		// ë¬¸ìì—´ ì „ë¶€ ì¶œë ¥
 		while (temp) {
 			check = cute_pos_comp(temp->row, temp->col, strlen(temp->str));
 			
-			// ºó ¹®ÀÚ¿­ ¾Æ´Ñ ¾Öµé¸¸ Ãâ·Â
+			// ë¹ˆ ë¬¸ìì—´ ì•„ë‹Œ ì• ë“¤ë§Œ ì¶œë ¥
 			if (temp->row < 19 && strcmp(temp->str, "")) {
 				delete(temp->row-1, temp->col, temp->str);
-				if (!check) {									// Áö··ÀÌ¶û ¾È°ãÄ¡¸é ±×¸°´Ù.
+				if (!check) {									// ì§€ë ì´ë‘ ì•ˆê²¹ì¹˜ë©´ ê·¸ë¦°ë‹¤.
 					draw(temp->row, temp->col, temp->str);	
 				}
 			}
 
 			else if(temp->row < 19 && !strcmp(temp->str,"")){
-				delete(temp->row, temp->col, "");				// °ø¹éÀÌ Á¸ÀçÇÏ¸é ±×°Ô Áö··ÀÌ¶û °ãÄ¡¸é 
-				draw(temp->row,temp->col,"");					// Áö··ÀÌ Áö¿öÁ®¼­ ºó¹®ÀÚ¿­·Î ¹Ù²Ş
+				delete(temp->row, temp->col, "");				// ê³µë°±ì´ ì¡´ì¬í•˜ë©´ ê·¸ê²Œ ì§€ë ì´ë‘ ê²¹ì¹˜ë©´ 
+				draw(temp->row,temp->col,"");					// ì§€ë ì´ ì§€ì›Œì ¸ì„œ ë¹ˆë¬¸ìì—´ë¡œ ë°”ê¿ˆ
 			}
-			if (temp->row == 19 && strcmp(temp->str, "     ")) {
-				move(1, 70);
-				sprintf(test, "%d", temp->row);
-				addstr(test);
-				sprintf(test2, "%d", temp->col);
-				move(2, 70);
-				addstr(test2);
-				move(3, 70);
-				addstr(test3);
-				refresh();
-			}
-			// row°¡ 18 ÀÌ»óÀÌ¸é ¾ø¾Ö°í Á¡¼ö±î±â
-			// ¶Ç´Â Áö··ÀÌ¶û °ãÄ¡¸é Á¡¼ö±î±â (À§ °úÁ¤¿¡¼­ ÀÌ¹Ì ±×·¯Áö ¾ÊÀ½)
+			
+			// rowê°€ 18 ì´ìƒì´ë©´ ì—†ì• ê³  ì ìˆ˜ê¹Œê¸°
+			// ë˜ëŠ” ì§€ë ì´ë‘ ê²¹ì¹˜ë©´ ì ìˆ˜ê¹Œê¸° (ìœ„ ê³¼ì •ì—ì„œ ì´ë¯¸ ê·¸ëŸ¬ì§€ ì•ŠìŒ)
 			if(temp->row >=19 && strcmp(temp->str,"") || check){
-				delete(temp->row-1, temp->col, temp->str);		// ±âÁØÁ¡ µµ´Ş ½Ã ¹®ÀÚ ¾Èº¸ÀÌ°Ô
+				delete(temp->row-1, temp->col, temp->str);		// ê¸°ì¤€ì  ë„ë‹¬ ì‹œ ë¬¸ì ì•ˆë³´ì´ê²Œ
 				
-				pthread_mutex_lock(&lock); // Á¦¾î
-				// »èÁ¦
+				pthread_mutex_lock(&lock); // ì œì–´
+				// ì‚­ì œ
 				del =temp;				
 				temp->left->right = NULL;
 				temp = temp->right;
@@ -334,7 +322,7 @@ void * thread_1()
 
 				// hp print
 				hp--;
-				pthread_mutex_unlock(&lock); // Á¦¾î unlock
+				pthread_mutex_unlock(&lock); // ì œì–´ unlock
 
 				move(0,1);
 				addstr("life  : ");
@@ -343,15 +331,15 @@ void * thread_1()
 				refresh();
 			}
 			
-			// row 18 ÀÌ»óÀÌ°í ºó¹®ÀÚ¿­ÀÏ °æ¿ì
+			// row 18 ì´ìƒì´ê³  ë¹ˆë¬¸ìì—´ì¼ ê²½ìš°
 			else if(temp->row >= 19){
-				pthread_mutex_lock(&lock); // Á¦¾î
-				// »èÁ¦
+				pthread_mutex_lock(&lock); // ì œì–´
+				// ì‚­ì œ
 				del =temp;				
 				temp->left->right = NULL;
 				temp = temp->right;
 				free(del); 
-				pthread_mutex_unlock(&lock); // Á¦¾î unlock
+				pthread_mutex_unlock(&lock); // ì œì–´ unlock
 
 			}
 
@@ -359,34 +347,34 @@ void * thread_1()
 				temp = temp->right;
 		}
 
-		move(20, 36); // Ä¿¼­ ÀÌµ¿
-		sleep(t); // ´ë±â
+		move(20, 36); // ì»¤ì„œ ì´ë™
+		sleep(t); // ëŒ€ê¸°
 		
 	}
 }
 
-// ÇØ´ç ´Ü¾î Ã£±â ÇÔ¼ö
+// í•´ë‹¹ ë‹¨ì–´ ì°¾ê¸° í•¨ìˆ˜
 void checkWord(char *str) {
 
 	nodePointer temp = NULL;
 	temp = ptr;
 	
-	// ¸Ç³¡À¸·Î °¡±â
+	// ë§¨ëìœ¼ë¡œ ê°€ê¸°
 	while(temp->right)
 		temp=temp->right;
-	// ¹Ø¿¡¼­ºÎÅÍ Å½»ö
+	// ë°‘ì—ì„œë¶€í„° íƒìƒ‰
 	while (temp) {
 		//if(!strcmp(str,""))
 		//	return;
 
-		// °°Àº °É Ã£À¸¸é ºó¹®ÀÚ¿­·Î ¹Ù²ãÁØ ÈÄ Á¾·á
+		// ê°™ì€ ê±¸ ì°¾ìœ¼ë©´ ë¹ˆë¬¸ìì—´ë¡œ ë°”ê¿”ì¤€ í›„ ì¢…ë£Œ
 		if (!strcmp(temp->str, str)) {
-			delete(temp->row, temp->col, temp->str);		// ºó ¹®ÀÚ·Î ¹Ù²Ù±â Àü¿¡ »èÁ¦
+			delete(temp->row, temp->col, temp->str);		// ë¹ˆ ë¬¸ìë¡œ ë°”ê¾¸ê¸° ì „ì— ì‚­ì œ
 			strcpy(temp->str,"");
 			
 			score++;
 
-			cute(0);						 // Ã£¾ÒÀ¸´Ï±ñ Áö··ÀÌ ¿òÁ÷ÀÌ±â
+			cute(0);						 // ì°¾ì•˜ìœ¼ë‹ˆê¹ ì§€ë ì´ ì›€ì§ì´ê¸°
 			
 			// score print
 			move(1,1);
@@ -396,14 +384,14 @@ void checkWord(char *str) {
 			refresh();
 			return;
 		}
-		// ´ÙÀ½ ³ëµå
+		// ë‹¤ìŒ ë…¸ë“œ
 		else
 			temp = temp->left;
 	}
 
 }
 
-// ³ëµå ¸¸µé±â ÇÔ¼ö
+// ë…¸ë“œ ë§Œë“¤ê¸° í•¨ìˆ˜
 nodePointer makeNode() {	
 	nodePointer temp;
 
@@ -412,46 +400,46 @@ nodePointer makeNode() {
 	return temp;
 }
 
-// ÇÑÁÙ ¾¿ ³»¸®´Â ÇÔ¼ö
+// í•œì¤„ ì”© ë‚´ë¦¬ëŠ” í•¨ìˆ˜
 void nextLine() {
 
 	nodePointer temp = ptr->right;
 
-	// row 1 Áõ°¡
+	// row 1 ì¦ê°€
 	while (temp) {
 		temp->row += 1;
 		temp = temp->right;
 	}
 }
 
-// ´Ü¾î Ãß°¡ÇÏ´Â ÇÔ¼ö
+// ë‹¨ì–´ ì¶”ê°€í•˜ëŠ” í•¨ìˆ˜
 void addQ(char *str, int col) {
 
 	nodePointer temp, temp2;
 
-	// Ã¹ ³ëµå ÀÏ °æ¿ì, ´Ü¾î Ãß°¡
+	// ì²« ë…¸ë“œ ì¼ ê²½ìš°, ë‹¨ì–´ ì¶”ê°€
 	if (ptr == NULL) {
 		ptr = makeNode();
-		strcpy(ptr->str, str); // ¹ŞÀº ¹®ÀÚ¿­·Î ´Ü¾î ¸¸µé±â
+		strcpy(ptr->str, str); // ë°›ì€ ë¬¸ìì—´ë¡œ ë‹¨ì–´ ë§Œë“¤ê¸°
 		ptr->row = 2;
 		ptr->col = col;
 	}
 
-	// ´Ü¾î Ãß°¡
+	// ë‹¨ì–´ ì¶”ê°€
 	else {
 		temp = makeNode();
-		strcpy(temp->str, str); // ¹ŞÀº ¹®ÀÚ¿­·Î ´Ü¾î ¸¸µé±â
+		strcpy(temp->str, str); // ë°›ì€ ë¬¸ìì—´ë¡œ ë‹¨ì–´ ë§Œë“¤ê¸°
 		temp->row = 2;
 		temp->col = col;
-		temp->right = ptr; // ¾ç¹æÇâ ¿¬°á
-		ptr->left = temp; // ¾ç¹æÇâ ¿¬°á
+		temp->right = ptr; // ì–‘ë°©í–¥ ì—°ê²°
+		ptr->left = temp; // ì–‘ë°©í–¥ ì—°ê²°
 		ptr = temp;
 		nextLine();
 	}
 	nodeCnt++;
 }
 
-// ·£´ıÀ¸·Î ¹®ÀÚ¿­ ¹İÈ¯ÇÏ±â
+// ëœë¤ìœ¼ë¡œ ë¬¸ìì—´ ë°˜í™˜í•˜ê¸°
 char * makeWord() {
 
 	char * DB[] = { "apple","jung","cocaine","hello","elite","fail","game",
@@ -460,7 +448,7 @@ char * makeWord() {
 	return DB[rand() % 14];
 }
 
-// ¹®ÀÚ¿­ ÀÌÀüÀ§Ä¡ Áö¿ì±â ÇÔ¼ö
+// ë¬¸ìì—´ ì´ì „ìœ„ì¹˜ ì§€ìš°ê¸° í•¨ìˆ˜
 void delete(int row, int col, char *str) {
 	char *del;
 	int i;
@@ -478,7 +466,7 @@ void delete(int row, int col, char *str) {
 	refresh();
 }
 
-// ±×¸®±â ÇÔ¼ö
+// ê·¸ë¦¬ê¸° í•¨ìˆ˜
 void draw(int row, int col, char* str) {
 	move(row, col);
 	addstr(str);
@@ -488,10 +476,10 @@ void draw(int row, int col, char* str) {
 	refresh();
 }
 
-// Áö··ÀÌ ¿òÁ÷ÀÌ´Â ÇÔ¼ö
+// ì§€ë ì´ ì›€ì§ì´ëŠ” í•¨ìˆ˜
 void cute(int move) {
 	if (move_cute % 2 == 0) {
-		move(19, 80 -  (move_cute / 2));
+		move(19, 80 -  (move_cute / 2));				// (move_cute / 2) ì•ì— ìˆ«ì ê³±í•´ì„œ ì›í•˜ëŠ” ë§Œí¼ ì´ë™ ê°€ëŠ¥		
 		addstr(blank1);
 		refresh();
 
@@ -507,8 +495,8 @@ void cute(int move) {
 		move(16, 80 -  (move_cute / 2));
 		addstr(cute2_1);
 
-		move(20, 36);													// Ä¿¼­ À§Ä¡¶§¹®¿¡ Áö··ÀÌ°¡ 
-																		// »ç¶óÁö´Â °æ¿ìµµ ÀÖ¾î¼­ Ç×»ó ÀÌ À§Ä¡·Î ÀÌµ¿
+		move(20, 36);								// ì»¤ì„œ ìœ„ì¹˜ë•Œë¬¸ì— ì§€ë ì´ê°€ 
+																		// ì‚¬ë¼ì§€ëŠ” ê²½ìš°ë„ ìˆì–´ì„œ í•­ìƒ ì´ ìœ„ì¹˜ë¡œ ì´ë™
 		cute_mode = 1;
 	}
 
@@ -537,15 +525,15 @@ void cute(int move) {
 	refresh();
 }
 
-// ´Ü¾î À§Ä¡¿Í Áö··ÀÌ À§Ä¡ ºñ±³ ÇÔ¼ö
+// ë‹¨ì–´ ìœ„ì¹˜ì™€ ì§€ë ì´ ìœ„ì¹˜ ë¹„êµ í•¨ìˆ˜
 int cute_pos_comp(int row, int col, int len) {
 	int cute_col_1 = 80 -  (move_cute / 2);
 	int cute_col_2 = 83 -  (move_cute / 2);
-	int check = 0;																// ´Ü¾î¶û Áö··ÀÌ¶û °ãÄ¡¸é 1
-	int i;																		// ´Ü¾îÀÇ ÀÏºÎ¶óµµ °ãÄ¡´Â °É È®ÀÎÇÏ±â À§ÇØ 
+	int check = 0;																// ë‹¨ì–´ë‘ ì§€ë ì´ë‘ ê²¹ì¹˜ë©´ 1
+	int i;																		// ë‹¨ì–´ì˜ ì¼ë¶€ë¼ë„ ê²¹ì¹˜ëŠ” ê±¸ í™•ì¸í•˜ê¸° ìœ„í•´ 
 
 	if (cute_mode == 0) {
-		if (row >= 19) {														// Âß Æí »óÅÂ
+		if (row >= 19) {														// ì­‰ í¸ ìƒíƒœ
 			for (i = 0; i < len; i++) {
 				if ((col + i >= cute_col_1) && (col + i < cute_col_1 + 17)) {
 					check = 1;
@@ -556,15 +544,15 @@ int cute_pos_comp(int row, int col, int len) {
 	}
 
 	if (cute_mode == 1) {
-		if (row >= 16) {														// ÂÉ±×¸° »óÅÂ
+		if (row >= 16) {														// ìª¼ê·¸ë¦° ìƒíƒœ
 			for (i = 0; i < len; i++) {
-				if ((col + i >= cute_col_2) && (col + i < cute_col_2 + 4)) {	// À­ºÎºĞ
+				if ((col + i >= cute_col_2) && (col + i < cute_col_2 + 4)) {	// ìœ—ë¶€ë¶„
 					check = 1;
 					break;
 				}
 			}
 
-			if (row >= 18) {													// ¾Æ·§ºÎºĞ
+			if (row >= 18) {													// ì•„ë«ë¶€ë¶„
 				for (i = 0; i < len; i++) {
 					if ((col >= cute_col_1) && (col < (cute_col_1 + 11))) {
 						check = 1;

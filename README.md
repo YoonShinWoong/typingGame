@@ -1,4 +1,7 @@
 # typingGame
 typingGame_systemProgramming
 
-cc main.c -o main -lcurses -lpthread
+method to play Game in linux_terminal
+
+cc typingGame.c -o game -lcurses -lpthread
+./game

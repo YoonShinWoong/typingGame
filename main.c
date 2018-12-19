@@ -9,6 +9,7 @@
 #include <pthread.h>
 #define MAX 100
 
+
 // 노드 구조체 선언
 typedef struct node * nodePointer;
 typedef struct node {
@@ -42,18 +43,76 @@ void addQ(char *str, int col);
 char * returnWord();
 void draw(int row, int col, char* str);
 void function(int);
+void game();
 
 // 메인 함수
 void main() {
-	pthread_t t1,t2;
-
+	
+	char option;
+	
+	// 초기화
 	initscr();
 	clear();
-
-	srand(time(NULL));
 	
 	// signal 처리
 	signal(SIGQUIT,function);
+
+	move(3,10);
+	addstr("******************************************************");
+	move(4,10);
+	addstr("*                                                    *");
+	move(5,10);	
+	addstr("*                   TYPING GAME                      *");
+	move(6,10);	
+	addstr("*                                                    *");
+	move(7,10);	
+	addstr("*                                                    *");
+	move(8,10);	
+	addstr("******************************************************");
+	move(11,10);	
+	addstr("1. Start Game					      ");
+	move(12,10);	
+	addstr("2. User score					      ");
+	move(13,10);	
+	addstr("3. EXIT  					      ");
+	
+	move(16,20);
+	refresh();
+
+	// 입력 받기
+	option = getch();
+	
+	// option 값 따라
+	switch(option){
+		// 게임하기
+		case '1':
+			// 게임
+			while(hp>0){
+				game();
+			}
+			break;
+
+		// 종료하기
+      		case '3':
+   			break;
+	}	
+	// 초기화	
+	reset();
+	endwin();
+	clear();
+}
+
+
+// 게임 동작 함수
+void game(){
+	
+	
+	pthread_t t1,t2;
+	
+	// 초기화
+	initscr();
+	clear();
+
 
 	// default setting
 	move(0,70);
@@ -81,12 +140,22 @@ void main() {
 	
 	// hp > 0 이상일 동안 반복
 	while (hp > 0) {		
+		
+		// 시작위치 초기화
+		enterHere = 0;
 
+		// 반복문
 		for (enterHere = 0; enterHere < 20;) {
 			int c = getch();
+			
+			if(enterHere >= 19 && c !='\n'){
+				move(20, 36);
+				addstr(enterText);			
+				continue;
+			}
 
 			// enter 들어오면 문자열 찾아서 삭제
-			if (c == '\n') {
+			else if (c == '\n') {
 				enterText[enterHere] = '\0';
 				findWord(enterText);
 
@@ -121,9 +190,10 @@ void main() {
 				move(20, 36);
 				addstr(enterText);
 			}
-
+			
 			refresh();
 		}
+		
 	}
 
 	// 쓰레드 조인

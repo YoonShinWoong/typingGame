@@ -44,6 +44,7 @@ char typingText[20] = { 0 };
 int enter_position = 0;
 
 int timer = 1000000;
+int word_interval = 2;
 int word_clock=0;
 int levelUP_Clock = 20;
 int level_Clock = 0;
@@ -261,7 +262,7 @@ void * game_Board()
 		word_clock++;
 		level_Clock++;
 
-		if (word_clock == 2) {
+		if (word_clock == word_interval) {
 			add_Word(wordDB(), (rand() % 40) + 8);
 			word_clock = 0;
 		}

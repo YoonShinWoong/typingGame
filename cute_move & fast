@@ -583,3 +583,4 @@ void fast() {
 	
 	signal(SIGALRM, fast);
 	alarm(5);			// 함수가 호출된 후 5초 뒤 속도 
+}

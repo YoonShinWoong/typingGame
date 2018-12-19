@@ -1,27 +1,28 @@
 #include "set.h"
 
-void reverse(nodePointer *node)//³ëµåÀÇ µ¥ÀÌÅÍ¸¦ ¹İ´ë·Î Ç¥Çö.
+void reverse(nodePointer *node)//ë…¸ë“œì˜ ë°ì´í„°ë¥¼ ë°˜ëŒ€ë¡œ í‘œí˜„.
 {
-	if ((*node)->modeset == 0)//¸ğµå¿¡ ¸Â°Ô ¼³Á¤µÇÁö ¾Ê¾Ò´Ù¸é
+	if ((*node)->modeset == 0)//ëª¨ë“œì— ë§ê²Œ ì„¤ì •ë˜ì§€ ì•Šì•˜ë‹¤ë©´
 	{
 		char k;
-		//(*node)->modeset = 1;//¼³Á¤
+		//(*node)->modeset = 1;//ì„¤ì •
 		//for (int i = 0; i < strlen((*node)->str) - 1; i++)
 		//{
 		//k = (*node)->str[i];
 		//(*node)->str[i] = (*node)->str[strlen((*node)->str) - 1 - i];
 		//	(*node)->str[strlen((*node)->str) - 1 - i] = k;
-		//}//µ¥ÀÌÅÍ °ª º¯È¯
+		//}//ë°ì´í„° ê°’ ë³€í™˜
 	}
 
 }
 
-void diagonal(nodePointer *node)//´ë°¢¼± ÀÌµ¿
+void diagonal(nodePointer *node)//ëŒ€ê°ì„  ì´ë™
 {
-	int n = rand() % 2;// -1(¿Ş), 0(¾Æ·¡) , 1(¿À¸¥)
+	int n = rand() % 2;// -1(ì™¼), 0(ì•„ë˜) , 1(ì˜¤ë¥¸)
+	setupterm(NULL, fileno(stdout), (int *)0);
 	int rows = tigetnum("lines");
 	int cols = tigetnum("cols");
-	//ÇØ»óµµ
+	//í•´ìƒë„
 
 	if (n == 0)
 	{

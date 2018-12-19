@@ -393,7 +393,7 @@ void level_up()
 
 	level_Clock = 0;//시계 초기화
 
-	if (level < 5)
+	if (level < 6)
 		level_mode++;
 }
 

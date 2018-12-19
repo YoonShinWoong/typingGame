@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <curses.h>//ncurses,h »ç¿ë °í·Á
+#include <curses.h>
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
 #include <pthread.h>
+
 #define MAX 100
+
 #define diagonal_mode 1
 #define reverse_mode 2
 #define a_mode 3
@@ -18,16 +20,12 @@
 typedef struct node * nodePointer;
 typedef struct node {
 	nodePointer right, left;
-	char str[MAX]; // Ãâ·Â ¹®ÀÚ
-	int row, col; // Ãâ·Â Çà¿­
-	int mode; // Ãâ·Â ¸ğµå
+	char str[MAX]; // ì¶œë ¥ ë¬¸ì
+	int row, col; // ì¶œë ¥ í–‰ì—´
+	int mode; // ì¶œë ¥ ëª¨ë“œ
 	int modeset;
 }node;
 
-char *getWord();//´Ü¾î °áÁ¤
-
-int rows;
-int columns;
-//ÇØ»óµµ
+char *getWord();//ë‹¨ì–´ ê²°ì •
 void reverse(nodePointer *);
 void diagonal(nodePointer *);

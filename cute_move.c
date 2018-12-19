@@ -364,8 +364,8 @@ void checkWord(char *str) {
 		temp=temp->right;
 	// 밑에서부터 탐색
 	while (temp) {
-		//if(!strcmp(str,""))
-		//	return;
+		if(!strcmp(str,""))
+			return;
 
 		// 같은 걸 찾으면 빈문자열로 바꿔준 후 종료
 		if (!strcmp(temp->str, str)) {

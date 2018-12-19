@@ -29,7 +29,7 @@ int length = 0;
 nodePointer ptr = NULL;
 char enterText[20] = { 0 };
 int enterHere = 0;
-int sleep_time = 2;
+int sleep_time = 1;
 int sleep_cnt=0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -270,15 +270,15 @@ void * thread_1()
 		// 문자열 전부 출력
 		while (temp) {
 			// 빈 문자열 아닌 애들만 출력
-			if(strcmp(temp->str,""))
+			if(temp->row < 19 && strcmp(temp->str,""))
 				draw(temp->row, temp->col, temp->str);			
 
-			else{
+			else if(temp->row < 19 && !strcmp(temp->str,"")){
 				draw(temp->row,temp->col,"                 ");
 			}
 
-			// row가 19 넘어가면 없애고 점수까기
-			if(temp->row >=18 && strcmp(temp->str,"")){
+			// row가 18 이상이면 없애고 점수까기
+			if(temp->row >=19 && strcmp(temp->str,"")){
 				pthread_mutex_lock(&lock); // 제어
 				// 삭제
 				del =temp;				
@@ -297,8 +297,8 @@ void * thread_1()
 				refresh();
 			}
 			
-			// row 19 넘어가고 빈문자열일 경우
-			else if(temp->row >= 18){
+			// row 18 이상이고 빈문자열일 경우
+			else if(temp->row >= 19){
 				pthread_mutex_lock(&lock); // 제어
 				// 삭제
 				del =temp;				

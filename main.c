@@ -9,6 +9,7 @@
 #include <pthread.h>
 #define MAX 100
 
+
 // 노드 구조체 선언
 typedef struct node * nodePointer;
 typedef struct node {
@@ -24,36 +25,94 @@ char hp_str[2]="";
 int score = 0;
 char score_str[MAX]="";
 int i = 0; 
-int length = 0;
+int nodeCnt = 0;
 nodePointer ptr = NULL;
 char enterText[20] = { 0 };
 int enterHere = 0;
-int sleep_time = 2;
+int sleep_time = 1;
 int sleep_cnt=0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 // 사용함수들
 void reset();
 void *thread_1();
-void findWord(char *str);
+void checkWord(char *str);
 nodePointer makeNode();
-void makePlusOne();
+void nextLine();
 void addQ(char *str, int col);
-char * returnWord();
+char * makeWord();
 void draw(int row, int col, char* str);
 void function(int);
+void game();
 
 // 메인 함수
 void main() {
-	pthread_t t1,t2;
-
+	
+	char option;
+	
+	// 초기화
 	initscr();
 	clear();
-
-	srand(time(NULL));
 	
 	// signal 처리
 	signal(SIGQUIT,function);
+
+	move(3,10);
+	addstr("******************************************************");
+	move(4,10);
+	addstr("*                                                    *");
+	move(5,10);	
+	addstr("*                   TYPING GAME                      *");
+	move(6,10);	
+	addstr("*                                                    *");
+	move(7,10);	
+	addstr("*                                                    *");
+	move(8,10);	
+	addstr("******************************************************");
+	move(11,10);	
+	addstr("1. Start Game					      ");
+	move(12,10);	
+	addstr("2. User score					      ");
+	move(13,10);	
+	addstr("3. EXIT  					      ");
+	
+	move(16,20);
+	refresh();
+
+	// 입력 받기
+	option = getch();
+	
+	// option 값 따라
+	switch(option){
+		// 게임하기
+		case '1':
+			// 게임
+			while(hp>0){
+				game();
+			}
+			break;
+
+		// 종료하기
+      		case '3':
+   			break;
+	}	
+	// 초기화	
+	reset();
+	endwin();
+	clear();
+}
+
+
+// 게임 동작 함수
+void game(){
+	
+	
+	pthread_t t1,t2;
+	
+	// 초기화
+	initscr();
+	clear();
+
 
 	// default setting
 	move(0,70);
@@ -81,14 +140,24 @@ void main() {
 	
 	// hp > 0 이상일 동안 반복
 	while (hp > 0) {		
+		
+		// 시작위치 초기화
+		enterHere = 0;
 
+		// 반복문
 		for (enterHere = 0; enterHere < 20;) {
 			int c = getch();
+			
+			if(enterHere >= 19 && c !='\n'){
+				move(20, 36);
+				addstr(enterText);			
+				continue;
+			}
 
 			// enter 들어오면 문자열 찾아서 삭제
-			if (c == '\n') {
+			else if (c == '\n') {
 				enterText[enterHere] = '\0';
-				findWord(enterText);
+				checkWord(enterText);
 
 				for (i = 0; i < 20; i++)
 					enterText[i] = '\0';
@@ -121,9 +190,10 @@ void main() {
 				move(20, 36);
 				addstr(enterText);
 			}
-
+			
 			refresh();
 		}
+		
 	}
 
 	// 쓰레드 조인
@@ -151,7 +221,7 @@ void reset() {
 
 	if (temp != NULL) {
 		// 개수 남아있으면 삭제하기
-		while (length > 0) {
+		while (nodeCnt > 0) {
 			temp = ptr;
 
 			while (temp->right) {
@@ -164,7 +234,7 @@ void reset() {
 			if (temp2 != NULL)
 				temp2->right = NULL;
 
-			length--; // 개수 감소
+			nodeCnt--; // 개수 감소
 			temp2 = NULL;
 		}
 		ptr = NULL;
@@ -190,7 +260,7 @@ void * thread_1()
 				addQ("",0);
 				break;
 			case 2:
-				addQ(returnWord(), (rand() % 40) + 8);
+				addQ(makeWord(), (rand() % 40) + 8);
 				sleep_cnt=0;
 		}
 
@@ -200,15 +270,15 @@ void * thread_1()
 		// 문자열 전부 출력
 		while (temp) {
 			// 빈 문자열 아닌 애들만 출력
-			if(strcmp(temp->str,""))
+			if(temp->row < 19 && strcmp(temp->str,""))
 				draw(temp->row, temp->col, temp->str);			
 
-			else{
+			else if(temp->row < 19 && !strcmp(temp->str,"")){
 				draw(temp->row,temp->col,"                 ");
 			}
 
-			// row가 19 넘어가면 없애고 점수까기
-			if(temp->row >=18 && strcmp(temp->str,"")){
+			// row가 18 이상이면 없애고 점수까기
+			if(temp->row >=19 && strcmp(temp->str,"")){
 				pthread_mutex_lock(&lock); // 제어
 				// 삭제
 				del =temp;				
@@ -227,8 +297,8 @@ void * thread_1()
 				refresh();
 			}
 			
-			// row 19 넘어가고 빈문자열일 경우
-			else if(temp->row >= 18){
+			// row 18 이상이고 빈문자열일 경우
+			else if(temp->row >= 19){
 				pthread_mutex_lock(&lock); // 제어
 				// 삭제
 				del =temp;				
@@ -250,7 +320,7 @@ void * thread_1()
 }
 
 // 해당 단어 찾기 함수
-void findWord(char *str) {
+void checkWord(char *str) {
 
 	nodePointer temp = NULL;
 	temp = ptr;
@@ -297,7 +367,7 @@ nodePointer makeNode() {
 }
 
 // 한줄 씩 내리는 함수
-void makePlusOne() {
+void nextLine() {
 
 	nodePointer temp = ptr->right;
 
@@ -331,13 +401,13 @@ void addQ(char *str, int col) {
 		temp->right = ptr; // 양방향 연결
 		ptr->left = temp; // 양방향 연결
 		ptr = temp;
-		makePlusOne();
+		nextLine();
 	}
-	length++;
+	nodeCnt++;
 }
 
 // 랜덤으로 문자열 반환하기
-char * returnWord() {
+char * makeWord() {
 
 	char * DB[] = { "apple","jung","cocaine","hello","elite","fail","game",
 				"halo","icon","jail","knight","lake","monkey","nope" };

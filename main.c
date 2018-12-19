@@ -25,7 +25,7 @@ char hp_str[2]="";
 int score = 0;
 char score_str[MAX]="";
 int i = 0; 
-int length = 0;
+int nodeCnt = 0;
 nodePointer ptr = NULL;
 char enterText[20] = { 0 };
 int enterHere = 0;
@@ -36,11 +36,11 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 // 사용함수들
 void reset();
 void *thread_1();
-void findWord(char *str);
+void checkWord(char *str);
 nodePointer makeNode();
-void makePlusOne();
+void nextLine();
 void addQ(char *str, int col);
-char * returnWord();
+char * makeWord();
 void draw(int row, int col, char* str);
 void function(int);
 void game();
@@ -157,7 +157,7 @@ void game(){
 			// enter 들어오면 문자열 찾아서 삭제
 			else if (c == '\n') {
 				enterText[enterHere] = '\0';
-				findWord(enterText);
+				checkWord(enterText);
 
 				for (i = 0; i < 20; i++)
 					enterText[i] = '\0';
@@ -221,7 +221,7 @@ void reset() {
 
 	if (temp != NULL) {
 		// 개수 남아있으면 삭제하기
-		while (length > 0) {
+		while (nodeCnt > 0) {
 			temp = ptr;
 
 			while (temp->right) {
@@ -234,7 +234,7 @@ void reset() {
 			if (temp2 != NULL)
 				temp2->right = NULL;
 
-			length--; // 개수 감소
+			nodeCnt--; // 개수 감소
 			temp2 = NULL;
 		}
 		ptr = NULL;
@@ -260,7 +260,7 @@ void * thread_1()
 				addQ("",0);
 				break;
 			case 2:
-				addQ(returnWord(), (rand() % 40) + 8);
+				addQ(makeWord(), (rand() % 40) + 8);
 				sleep_cnt=0;
 		}
 
@@ -320,7 +320,7 @@ void * thread_1()
 }
 
 // 해당 단어 찾기 함수
-void findWord(char *str) {
+void checkWord(char *str) {
 
 	nodePointer temp = NULL;
 	temp = ptr;
@@ -367,7 +367,7 @@ nodePointer makeNode() {
 }
 
 // 한줄 씩 내리는 함수
-void makePlusOne() {
+void nextLine() {
 
 	nodePointer temp = ptr->right;
 
@@ -401,13 +401,13 @@ void addQ(char *str, int col) {
 		temp->right = ptr; // 양방향 연결
 		ptr->left = temp; // 양방향 연결
 		ptr = temp;
-		makePlusOne();
+		nextLine();
 	}
-	length++;
+	nodeCnt++;
 }
 
 // 랜덤으로 문자열 반환하기
-char * returnWord() {
+char * makeWord() {
 
 	char * DB[] = { "apple","jung","cocaine","hello","elite","fail","game",
 				"halo","icon","jail","knight","lake","monkey","nope" };

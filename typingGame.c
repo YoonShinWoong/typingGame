@@ -15,23 +15,22 @@
 #define REVERSE_MODE 3
 #define DIAGONAL_MODE 4
 
-
 // 단어 노드
 typedef struct node * nodePointer;
 typedef struct node {
-	nodePointer right,left;
+	nodePointer right, left;
 	char str[MAX]; // 출력 문자
-	int row,col; // 출력 행열
+	int row, col; // 출력 행열
 	int mode; // 출력 모드
 	int modeset;
 }node;
 
 //HP
 int hp = 20;
-char hp_bar[3]="";
+char hp_bar[3] = "";
 //SCORE
 int score = 0;
-char score_bar[MAX]="";
+char score_bar[MAX] = "";
 //LEVEL
 int level = 1;
 int level_mode = 1;
@@ -45,9 +44,10 @@ int enter_position = 0;
 
 int timer = 1000000;
 int word_interval = 2;
-int word_clock=0;
+int word_clock = 0;
 int levelUP_Clock = 20;
 int level_Clock = 0;
+int speed_up = 0;
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -67,6 +67,7 @@ void level_up();
 //mode
 void reverse(nodePointer *);
 void diagonal(nodePointer *);
+void fast();
 
 // 메인 함수
 void main() {
@@ -79,6 +80,7 @@ void main() {
 	srand(time(NULL));
 	// signal 처리
 	signal(SIGQUIT, exit);
+	signal(SIGALRM, fast);						// 5초 뒤부터 속도 빨라짐
 
 	move(3, 10);
 	addstr("******************************************************");
@@ -130,24 +132,25 @@ void start_game() {
 	pthread_t th;
 
 	// Game Name
-	move(0, 70);
-	addstr("level : ");
+	move(0, 75);
+	addstr("Level");
+	move(1, 78);
 	sprintf(level_bar, "%02d", level);
 	addstr(level_bar);
+	move(0, 15);
+	addstr("ADDING_MODE");
 
 	// score print
 	move(1, 1);
 	addstr("score : ");
 	sprintf(score_bar, "%03d", score);
 	addstr(score_bar);
-	refresh();
 
 	// hp print
 	move(0, 1);
 	addstr("life  : ");
 	sprintf(hp_bar, "%3d", hp);
 	addstr(hp_bar);
-
 	refresh();
 
 	// enter_position
@@ -263,7 +266,7 @@ void * game_Board()
 		level_Clock++;
 
 		if (word_clock == word_interval) {
-			add_Word(wordDB(), (rand() % 40) + 8);
+			add_Word(wordDB(), (rand() % 55) + 4);
 			word_clock = 0;
 		}
 		else
@@ -290,6 +293,7 @@ void * game_Board()
 			}
 			else if (temp->row < 19 && !strcmp(temp->str, ""))
 				draw(temp->row, temp->col, "                   ");
+
 			// row가 18 이상이면 없애고 점수까기
 			if (temp->row >= 19 && strcmp(temp->str, "")) {
 				pthread_mutex_lock(&lock); // 제어
@@ -327,7 +331,11 @@ void * game_Board()
 		}
 
 		move(20, 36); // 커서 이동
-		usleep(timer); // 대기
+
+		if (speed_up)
+			usleep(timer / 2);
+		else
+			usleep(timer); // 대기
 
 	}
 }
@@ -336,13 +344,56 @@ void level_up()
 {
 	timer -= 100000;//간격 0.1초 감소
 	level++;//레벨업
-	move(0, 70);
-	addstr("level : ");
+	move(0, 75);
+	addstr("Level");
+	move(1, 78);
 	sprintf(level_bar, "%02d", level);
 	addstr(level_bar);
+	if (level == 2)
+	{
+		move(1, 15);
+		addstr("HIDE_MODE");
+		addstr(" FAST_MODE");
+		alarm(5);//FAST_MODE
+	}
+	if (level == 3)
+	{
+		move(1, 15);
+		addstr("HIDE_MODE");
+		addstr(" FAST_MODE");
+		addstr(" BLINK_MODE");
+	}
+	if (level == 4)
+	{
+		move(1, 15);
+		addstr("HIDE_MODE");
+		addstr(" FAST_MODE");
+		addstr(" BLINK_MODE");
+		addstr(" REVERSE_MODE");
+	}
+	if (level == 5)
+	{
+		move(1, 15);
+		addstr("HIDE_MODE");
+		addstr(" FAST_MODE");
+		addstr(" BLINK_MODE");
+		addstr(" REVERSE_MODE");
+		addstr(" DIAGONAL_MODE");
+	}
+	
+	if (level == 6)
+	{
+		move(1, 15);
+		addstr("HIDE_MODE");
+		addstr(" BLINK_MODE");
+		addstr(" REVERSE_MODE");
+		addstr(" DIAGONAL_MODE");
+		addstr("         ");
+	}
+
 	level_Clock = 0;//시계 초기화
 
-	if (level < 6)
+	if (level < 5)
 		level_mode++;
 }
 
@@ -456,8 +507,8 @@ void add_Word(char *str, int col) {
 // 문자열 선정
 char * wordDB() {
 
-	char *DB1[] = { "paper", "chair", "desk", "book", "note", "computer", "cloth", "closet", "sign", "door", "room", "pencil", "pen", "pants", "shop", "building", "keyboard", "dictionary", "mouse", "cellphone", "speaker", "hospital", "car", "bicyle", "cup"};
-	char *DB2[] = { "anxiety","boredom","conpuse","dragon","excitement","frustrate","greed","happiness","impatience","jealousy","kindess","loyalty","master","necessary","overwhelming","pessimism","quietus","relief","satisfaction","thrill","union","view","worriation","yell","zealot" };
+	char *DB1[] = { "paper", "chair", "desk", "book", "note", "computer", "cloth", "closet", "sign", "door", "room", "pencil", "pen", "pants", "shop", "building", "keyboard", "dictionary", "mouse", "cellphone", "speaker", "hospital", "car", "bicycle", "cup" };
+	char *DB2[] = { "anxiety","boredom","confuse","dragon","excitement","frustrate","greed","happiness","impatience","jealousy","kindess","loyalty","master","necessary","overwhelming","pessimism","quietus","relief","satisfaction","thrill","union","view","worriation","yell","zealot" };
 	char *DB3[] = { "grape","orange","potato","watermelon","melon","peach","tomato","onion","spinach","cabbage","carrot","strawberry","pepper","pear","persimmon","pumpkin","mandarin","mushroom","apple","banana","cherry","plum","jujube","citron","pineapple" };
 	char *DB4[] = { "Lion", "Tiger", "Elephant", "Dog", "Penguin", "Frog", "Horse", "Giraffe", "Sunflower", "Mugunghwa", "Rose", "Cherry blossoms", "Maple", "Tulip", "Cosmos" };
 
@@ -510,4 +561,14 @@ void diagonal(nodePointer *node)//대각선 이동
 		if ((*node)->col + strlen((*node)->str) - 3 < 80)
 			(*node)->col += 3;
 	}
+}
+
+void fast() {
+	if (speed_up == 0)
+		speed_up = 1;
+	else
+		speed_up = 0;
+
+	if (level < 6)
+		alarm(5);		// 함수가 호출된 후 5초 뒤 속도 
 }

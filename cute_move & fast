@@ -32,6 +32,7 @@ int enterHere = 0;
 int sleep_time = 1;
 int sleep_cnt=0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+int speed_up = 0;
 
 // 지렁이 움직임에 쓰는 변수
 int move_cute = 0;
@@ -62,6 +63,7 @@ void function(int);
 void game();
 void cute(int move);
 int cute_pos_comp(int row, int col, int len);
+void fast();
 
 // 메인 함수
 void main() {
@@ -160,6 +162,9 @@ void game(){
 
 	// 쓰레드 생성
 	pthread_create(&t1, NULL, thread_1, NULL);
+	
+	signal(SIGALRM, fast);						// 5초 뒤부터 속도 빨라짐
+	alarm(5);
 	
 	// hp > 0 이상일 동안 반복
 	while (hp > 0) {		
@@ -348,7 +353,11 @@ void * thread_1()
 		}
 
 		move(20, 36); // 커서 이동
-		sleep(t); // 대기
+		
+		if(speed_up == 1)				// 속도 2배
+			usleep(t * 1000000 / 2);
+		else
+			sleep(t); // 대기
 		
 	}
 }
@@ -565,3 +574,12 @@ int cute_pos_comp(int row, int col, int len) {
 
 	return check;
 }
+
+void fast() {
+	if(speed_up == 0)
+		speed_up = 1;
+	else
+		speed_up = 0;
+	
+	signal(SIGALRM, fast);
+	alarm(5);			// 함수가 호출된 후 5초 뒤 속도 

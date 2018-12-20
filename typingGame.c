@@ -62,7 +62,7 @@ void exit(int);
 
 //game
 void start_game();
-void *game_Board();
+void *game_Board(void *);
 void level_up();
 //mode
 void reverse(nodePointer *);
@@ -120,10 +120,8 @@ void main() {
 	case '3':
 		break;
 	}
-	// 초기화	
-	all_Clear();
+
 	endwin();
-	clear();
 }
 // 게임
 void start_game() {
@@ -161,62 +159,64 @@ void start_game() {
 
 	// hp > 0 이상일 동안 반복
 	while (hp > 0) {
-
-		// 시작위치 초기화
-		enter_position = 0;
-
 		// 반복문
 		for (enter_position = 0; enter_position < 20;) {
 			int c = getch();
 
-			if (enter_position == 19 && c != '\n' && c != 127) {
-				move(20, 36);
-				addstr(typingText);
-			}
-			// enter 들어오면 문자열 찾아서 삭제
-			else if (c == '\n') {
-				typingText[enter_position] = '\0';
-				word_Check(typingText);
+			if (hp == 0) break;
+			else {
+				if (enter_position == 19 && c != '\n' && c != 127) {
+					move(20, 36);
+					addstr(typingText);
+				}
+				// enter 들어오면 문자열 찾아서 삭제
+				else if (c == '\n') {
+					typingText[enter_position] = '\0';
+					word_Check(typingText);
 
-				for (i = 0; i < 20; i++)
-					typingText[i] = '\0';
+					for (i = 0; i < 20; i++)
+						typingText[i] = '\0';
 
-				draw(20, 20, "	| Enter | : ");
-				move(20, 36);
+					draw(20, 20, "	| Enter | : ");
+					move(20, 36);
 
-				break;
-			}
-			// backspace 들어오면 문자 하나 삭제
-			else if (c == 127) {
-				// 남아있으면 삭제
-				if (enter_position > 0) {
-					typingText[--enter_position] = '\0';
+					break;
+
+				}
+				// backspace 들어오면 문자 하나 삭제
+				else if (c == 127) {
+					// 남아있으면 삭제
+					if (enter_position > 0) {
+						typingText[--enter_position] = '\0';
+						draw(20, 20, "	| Enter | : ");
+						move(20, 36);
+						addstr(typingText);
+					}
+					// 없으면 빈문자열 출력
+					else {
+						draw(20, 20, "	| Enter | : ");
+						move(20, 36);
+						addstr("              	   	");
+					}
+				}
+				// 입력이 되면 하나추가해서 보여주기
+				else {
+					typingText[enter_position++] = c;
 					draw(20, 20, "	| Enter | : ");
 					move(20, 36);
 					addstr(typingText);
 				}
-				// 없으면 빈문자열 출력
-				else {
-					draw(20, 20, "	| Enter | : ");
-					move(20, 36);
-					addstr("              	   	");
-				}
-			}
-			// 입력이 되면 하나추가해서 보여주기
-			else {
-				typingText[enter_position++] = c;
-				draw(20, 20, "	| Enter | : ");
-				move(20, 36);
-				addstr(typingText);
-			}
 
-			refresh();
+				refresh();
+			}
 		}
 
 	}
-
 	// 쓰레드 조인
 	pthread_join(th, NULL);
+
+	all_Clear();
+	clear();
 }
 
 // 강제 종료
@@ -232,34 +232,25 @@ void all_Clear() {
 	nodePointer temp = NULL;
 	nodePointer btemp = NULL;
 
-	temp = ptr;
-
-	if (temp != NULL) {
-		// 개수 남아있으면 삭제하기
+	if (ptr)
+	{
 		while (temp) {
-			temp = ptr;
+			temp = ptr->right;
+			btemp = ptr;
 
-			while (temp->right) {
-				btemp = temp;
-				temp = temp->right;
-			}
+			free(btemp);
 
-			free(temp); // 비워주기
-
-			if (btemp != NULL)
-				btemp->right = NULL;
-
-			btemp = NULL;
+			ptr = temp;
 		}
-		ptr = NULL;
 	}
 }
 
 // 단어 출력 쓰레드
-void * game_Board()
+void * game_Board(void *m)
 {
 	nodePointer temp = NULL;
 	nodePointer del = NULL;
+
 	while (hp > 0) {
 
 		word_clock++;
@@ -401,6 +392,7 @@ void level_up()
 void word_Check(char *str) {
 
 	nodePointer temp = NULL;
+
 	temp = ptr;
 
 	// 맨끝으로 가기
@@ -510,7 +502,7 @@ char * wordDB() {
 	char *DB1[] = { "paper", "chair", "desk", "book", "note", "computer", "cloth", "closet", "sign", "door", "room", "pencil", "pen", "pants", "shop", "building", "keyboard", "dictionary", "mouse", "cellphone", "speaker", "hospital", "car", "bicycle", "cup" };
 	char *DB2[] = { "anxiety","boredom","confuse","dragon","excitement","frustrate","greed","happiness","impatience","jealousy","kindess","loyalty","master","necessary","overwhelming","pessimism","quietus","relief","satisfaction","thrill","union","view","worriation","yell","zealot" };
 	char *DB3[] = { "grape","orange","potato","watermelon","melon","peach","tomato","onion","spinach","cabbage","carrot","strawberry","pepper","pear","persimmon","pumpkin","mandarin","mushroom","apple","banana","cherry","plum","jujube","citron","pineapple" };
-	char *DB4[] = { "lion", "tiger", "elephant", "dog", "penguin", "frog", "horse", "giraffe", "sunflower", "mugunghwa", "rose", "cherry blossoms", "maple", "tulip", "cosmos" };
+	char *DB4[] = { "Lion", "Tiger", "Elephant", "Dog", "Penguin", "Frog", "Horse", "Giraffe", "Sunflower", "Mugunghwa", "Rose", "Cherry blossoms", "Maple", "Tulip", "Cosmos" };
 
 	int dice = rand() % 90;
 

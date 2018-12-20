@@ -510,7 +510,7 @@ char * wordDB() {
 	char *DB1[] = { "paper", "chair", "desk", "book", "note", "computer", "cloth", "closet", "sign", "door", "room", "pencil", "pen", "pants", "shop", "building", "keyboard", "dictionary", "mouse", "cellphone", "speaker", "hospital", "car", "bicycle", "cup" };
 	char *DB2[] = { "anxiety","boredom","confuse","dragon","excitement","frustrate","greed","happiness","impatience","jealousy","kindess","loyalty","master","necessary","overwhelming","pessimism","quietus","relief","satisfaction","thrill","union","view","worriation","yell","zealot" };
 	char *DB3[] = { "grape","orange","potato","watermelon","melon","peach","tomato","onion","spinach","cabbage","carrot","strawberry","pepper","pear","persimmon","pumpkin","mandarin","mushroom","apple","banana","cherry","plum","jujube","citron","pineapple" };
-	char *DB4[] = { "Lion", "Tiger", "Elephant", "Dog", "Penguin", "Frog", "Horse", "Giraffe", "Sunflower", "Mugunghwa", "Rose", "Cherry blossoms", "Maple", "Tulip", "Cosmos" };
+	char *DB4[] = { "lion", "tiger", "elephant", "dog", "penguin", "frog", "horse", "giraffe", "sunflower", "mugunghwa", "rose", "cherry blossoms", "maple", "tulip", "cosmos" };
 
 	int dice = rand() % 90;
 
